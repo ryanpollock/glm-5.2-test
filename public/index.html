@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panda Days in SF</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="bar">
+    <h1>🐼 Panda Days in SF</h1>
+    <div class="stats">
+      <span id="energy">Energy: 20</span>
+      <span id="bamboo">Bamboo: 0</span>
+      <span id="photos">Photos: 0/8</span>
+      <span id="score">Score: 0</span>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="board-wrap">
+      <canvas id="game" width="544" height="544" tabindex="0"></canvas>
+    </div>
+
+    <aside class="side">
+      <div class="panel">
+        <h2>Map of SF</h2>
+        <canvas id="minimap" width="136" height="102"></canvas>
+      </div>
+      <div class="panel">
+        <h2>Scoreboard</h2>
+        <ol id="scoreboard"></ol>
+      </div>
+      <div class="panel controls">
+        <h2>Controls</h2>
+        <p>Move: <b>Arrow keys</b> / <b>WASD</b></p>
+        <p>Action: <b>Space</b> (photograph / nap / ride)</p>
+        <p>Goal: photograph all <b>8 landmarks</b>.</p>
+        <p style="margin-top:8px;color:var(--muted)">Watch out for cable cars, seagulls &amp; lost tourists!</p>
+      </div>
+      <div class="panel">
+        <h2>Actions</h2>
+        <button id="music-btn">Music: On</button>
+        <button id="restart">Restart</button>
+        <button id="char-btn">Change character</button>
+        <button id="submit">Submit score</button>
+        <p style="margin:10px 0 0"><a href="/runner" style="color:var(--accent)">Play the side-scroller &rarr;</a></p>
+      </div>
+    </aside>
+  </main>
+
+  <div id="overlay" class="overlay hidden">
+    <div class="card">
+      <h2 id="ov-title">Postcards Complete!</h2>
+      <p id="ov-body"></p>
+      <input id="ov-name" maxlength="32" placeholder="Your name" />
+      <div class="btns">
+        <button id="ov-submit">Submit &amp; play again</button>
+        <button id="ov-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="char-picker" class="overlay hidden"></div>
+
+  <div id="touch-controls" class="touch-controls hidden">
+    <div class="dpad">
+      <button class="touch-btn up"    data-key="ArrowUp">▲</button>
+      <button class="touch-btn left"  data-key="ArrowLeft">◀</button>
+      <button class="touch-btn down"  data-key="ArrowDown">▼</button>
+      <button class="touch-btn right" data-key="ArrowRight">▶</button>
+    </div>
+    <div class="touch-actions">
+      <button class="touch-btn action" data-key="Space">📷<br>Photo</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/js/characters.js"></script>
+  <script src="/js/music.js"></script>
+  <script src="/js/game.js"></script>
+  <script src="/js/touch.js"></script>
+</body>
+</html>

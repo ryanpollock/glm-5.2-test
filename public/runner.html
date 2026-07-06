@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panda Across the Bridge</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+  <script src="/js/music.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <h1>🐼 Panda Across the Bridge</h1>
+    <div class="stats">
+      <span id="lives">Lives: 3</span>
+      <span id="bamboo">Bamboo: 0</span>
+      <span id="score">Score: 0</span>
+      <span id="dist">0m</span>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="board-wrap">
+      <div id="game-container"></div>
+    </div>
+
+    <aside class="side">
+      <div class="panel">
+        <h2>Objective</h2>
+        <p style="margin:4px 0;color:var(--muted)">Run from SF, across the bamboo-reclaimed Bay Bridge, to the finish flag.</p>
+        <p style="margin:4px 0;color:var(--muted)"><a href="/" style="color:var(--accent)">&larr; back to Panda Days in SF</a></p>
+      </div>
+      <div class="panel">
+        <h2>Scoreboard</h2>
+        <ol id="scoreboard"></ol>
+      </div>
+      <div class="panel controls">
+        <h2>Controls</h2>
+        <p>Move: <b>Arrow keys</b> / <b>A/D</b></p>
+        <p>Jump: <b>Space</b> / <b>Up</b> / <b>W</b> (hold for higher)</p>
+        <p>Collect <b>bamboo</b>. Avoid seagulls &amp; frogs.</p>
+        <p>Music: <b>M</b> key</p>
+      </div>
+      <div class="panel">
+        <h2>Actions</h2>
+        <button id="music-btn">Music: On</button>
+        <button id="restart">Restart</button>
+        <button id="char-btn">Change character</button>
+      </div>
+    </aside>
+  </main>
+
+  <div id="overlay" class="overlay hidden">
+    <div class="card">
+      <h2 id="ov-title">You reached the bridge!</h2>
+      <p id="ov-body"></p>
+      <input id="ov-name" maxlength="32" placeholder="Your name" />
+      <div class="btns">
+        <button id="ov-submit">Submit &amp; play again</button>
+        <button id="ov-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="char-picker" class="overlay hidden"></div>
+
+  <div id="touch-controls" class="touch-controls hidden">
+    <div class="sidepad">
+      <button class="touch-btn left"  data-key="ArrowLeft">◀</button>
+      <button class="touch-btn right" data-key="ArrowRight">▶</button>
+    </div>
+    <div class="touch-actions">
+      <button class="touch-btn action" data-key="Space">⬆<br>Jump</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/js/characters.js"></script>
+  <script src="/js/runner.js"></script>
+  <script src="/js/touch.js"></script>
+</body>
+</html>
