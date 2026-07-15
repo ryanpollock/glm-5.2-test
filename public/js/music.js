@@ -83,7 +83,25 @@
     }
   }
 
+  // iOS Safari requires a short buffer played directly to ctx.destination
+  // inside the user gesture to fully unlock audio output.
+  function unlock() {
+    if (!ctx) return;
+    const buf = ctx.createBuffer(1, 1, ctx.sampleRate);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const g = ctx.createGain();
+    g.gain.value = 0.0001;
+    src.connect(g); g.connect(ctx.destination);
+    src.start(0);
+    src.stop(ctx.currentTime + 0.02);
+  }
+
   function scheduler() {
+    if (!ctx || ctx.state !== 'running') {
+      timer = setTimeout(scheduler, 60);
+      return;
+    }
     const sec16 = (60 / tempo) / 4;
     while (nextTime < ctx.currentTime + 0.12) {
       scheduleStep(step, nextTime);
@@ -93,12 +111,18 @@
     timer = setTimeout(scheduler, 25);
   }
 
-  function start() {
+  async function start() {
     ensureCtx();
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state === 'suspended') {
+      try { await ctx.resume(); } catch (_) {}
+    }
+    // iOS sometimes reports 'interrupted' or stays suspended; bail and let the
+    // next user gesture retry.
+    if (ctx.state !== 'running') return;
+    unlock();
     if (started) return;
     started = true;
-    nextTime = ctx.currentTime + 0.1;
+    nextTime = ctx.currentTime + 0.15;
     step = 0;
     scheduler();
   }

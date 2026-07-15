@@ -77,7 +77,7 @@ app.get('/api/health', (req, res) => res.json({ ok: true }));
 
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`Panda Days in SF server running: http://localhost:${PORT}`);
+    console.log(`Panda's City Tour server running: http://localhost:${PORT}`);
   });
 }
 
