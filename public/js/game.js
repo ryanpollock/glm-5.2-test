@@ -396,7 +396,7 @@
   ui.ovClose.addEventListener('click', () => ui.overlay.classList.add('hidden'));
   ui.music.addEventListener('click', toggleMusic);
   if (ui.charBtn) ui.charBtn.addEventListener('click', () => {
-    Characters.open(() => { newGame(); canvas.focus(); });
+    Characters.open(() => { updateTitle(); newGame(); canvas.focus(); });
   });
 
   // ---------- Actions ----------
@@ -1360,7 +1360,18 @@
 
   if (ui.music) ui.music.textContent = 'Music: ' + (Music.isMuted() ? 'Off' : 'On');
 
+  function updateTitle() {
+    const ch = window.Characters ? Characters.get() : null;
+    const name = ch ? ch.name : 'Panda';
+    const emoji = ch ? ch.emoji : '🐼';
+    const title = emoji + ' ' + name + "'s City Tour";
+    document.title = title;
+    const h1 = document.getElementById('game-title');
+    if (h1) h1.textContent = title;
+  }
+
   function boot() {
+    updateTitle();
     newGame();
     canvas.focus();
     last = performance.now();

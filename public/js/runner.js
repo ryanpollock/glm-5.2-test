@@ -739,7 +739,7 @@ this.updateHUD();
     ui.music.textContent = 'Music: ' + (m ? 'Off' : 'On');
   });
   if (ui.charBtn) ui.charBtn.addEventListener('click', () => {
-    Characters.open(() => { if (game) game.scene.scenes[0].scene.restart(); });
+    Characters.open(() => { updateTitle(); if (game) game.scene.scenes[0].scene.restart(); });
   });
 
   // ===== Boot =====
@@ -758,7 +758,17 @@ this.updateHUD();
       });
     } catch (e) { showErr(e.message); }
   }
+  function updateTitle() {
+    const ch = window.Characters ? Characters.get() : null;
+    const name = ch ? ch.name : 'Panda';
+    const emoji = ch ? ch.emoji : '🐼';
+    const title = emoji + ' ' + name + ' Across the Bridge';
+    document.title = title;
+    const h1 = document.getElementById('game-title');
+    if (h1) h1.textContent = title;
+  }
   function startBoot() {
+    updateTitle();
     if (window.Phaser) boot(); else window.addEventListener('load', boot);
   }
   if (window.Characters && !Characters.hasChoice()) {

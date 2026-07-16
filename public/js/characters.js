@@ -38,7 +38,7 @@
     el.dataset.built = '1';
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = '<h2>Choose your hero</h2><p>Pick a character to explore San Francisco.</p>';
+    card.innerHTML = '<h2>Choose your hero</h2><p>Pick a character for your city adventure.</p>';
     const grid = document.createElement('div');
     grid.className = 'char-grid';
     Object.keys(CHARACTERS).forEach((id) => {
