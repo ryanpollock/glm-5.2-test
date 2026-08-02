@@ -1,5 +1,5 @@
 // Panda's City Tour — client game engine
-// Top-down cozy explorer: a panda photographs landmarks across 4 cities.
+// Top-down cozy explorer: a panda photographs landmarks across 5 cities.
 
 (() => {
   'use strict';
@@ -156,6 +156,49 @@
     for (let i = 0; i < 12; i++) s.fog.push({ x: 34+Math.random()*6, y: Math.random()*MAP_H, vx: -0.05-Math.random()*0.05, a: 0.05+Math.random()*0.08 });
   }
 
+  // ---------- NYC map ----------
+  function buildNYCMap() {
+    const m = newMap();
+    // Hudson River (west), East River (east), harbor (south)
+    fillM(m, 0, 2, 0, MAP_H - 1, T.WATER);
+    fillM(m, 36, MAP_W - 1, 0, MAP_H - 1, T.WATER);
+    fillM(m, 3, 35, 28, MAP_H - 1, T.WATER);
+    // Liberty Island (Statue of Liberty) in the harbor
+    fillM(m, 18, 19, 26, 27, T.SAND);
+    // Brooklyn Bridge across the East River
+    fillM(m, 33, 36, 14, 14, T.BRIDGE);
+    // Street grid (Manhattan avenues)
+    for (const y of [4, 8, 12, 16, 20, 24]) fillM(m, 3, 35, y, y, T.STREET);
+    for (const x of [6, 12, 18, 24, 30]) fillM(m, x, x, 2, 26, T.STREET);
+    // Central Park (big green rectangle)
+    fillM(m, 14, 22, 3, 7, T.GRASS);
+    setM(m, 14, 3, T.STREET); setM(m, 22, 3, T.STREET);
+    setM(m, 14, 7, T.STREET); setM(m, 22, 7, T.STREET);
+    // Midtown buildings (Empire State / Rockefeller area)
+    fillM(m, 8, 12, 10, 13, T.BUILDING);
+    fillM(m, 8, 12, 11, 11, T.STREET); fillM(m, 8, 12, 13, 13, T.STREET);
+    fillM(m, 10, 10, 10, 13, T.STREET);
+    // Downtown buildings
+    fillM(m, 4, 10, 20, 25, T.BUILDING);
+    fillM(m, 4, 10, 21, 21, T.STREET); fillM(m, 4, 10, 24, 24, T.STREET);
+    fillM(m, 7, 7, 20, 25, T.STREET);
+    // Brooklyn side (east of East River)
+    fillM(m, 37, 39, 10, 18, T.BUILDING);
+    fillM(m, 37, 39, 14, 14, T.STREET);
+    // Park trees
+    setM(m, 30, 22, T.BUILDING); setM(m, 32, 20, T.BUILDING); setM(m, 28, 24, T.BUILDING);
+    return m;
+  }
+  function setupNYC(s) {
+    s.bamboos = [[15,4],[16,5],[17,4],[18,6],[20,5],[16,6],[19,3],[21,4],[28,22],[30,20],[32,24],[6,14],[4,14]]
+      .map(([x,y]) => ({ x, y, taken: false, bob: Math.random()*Math.PI*2 })).filter((b) => !isSolidTile(s.map[b.y][b.x]));
+    s.cars = [{ x: 18, y: 4, dir: 1, t: 0 }, { x: 18, y: 20, dir: -1, t: 0.5 }];
+    s.gulls = [{ x: 18, y: 25, baseX: 18, baseY: 25, t: Math.random()*6 }, { x: 20, y: 27, baseX: 20, baseY: 27, t: Math.random()*6 }, { x: 36, y: 15, baseX: 36, baseY: 15, t: Math.random()*6 }];
+    s.tourists = [{ x: 6, y: 12, dx: 0, dy: 0, t: 0 }, { x: 9, y: 11, dx: 0, dy: 0, t: 1.5 }, { x: 8, y: 13, dx: 0, dy: 0, t: 3 }];
+    s.fog = [];
+    for (let i = 0; i < 12; i++) s.fog.push({ x: 36+Math.random()*4, y: 20+Math.random()*8, vx: -0.04-Math.random()*0.04, a: 0.05+Math.random()*0.08 });
+  }
+
   // ---------- Cleveland map ----------
   function buildClevelandMap() {
     const m = newMap();
@@ -252,6 +295,25 @@
       pandaStart: { x: 12, y: 9 }, lastNap: { x: 12, y: 9 },
       welcomeToast: 'Welcome to Chicago! Photograph all 5 landmarks.',
       buildMap: buildChicagoMap, setup: setupChicago,
+    },
+    {
+      name: 'New York City', vehicleName: 'subway', vehicleType: 'subway', vehicleColor: '#3a7fd4',
+      landmarks: [
+        { key: 'nyc_liberty',  name: 'Statue of Liberty',   x: 18, y: 27, color: '#5cb85c' },
+        { key: 'nyc_empire',   name: 'Empire State Building', x: 10, y: 11, color: '#3a3a40' },
+        { key: 'nyc_central',  name: 'Central Park',        x: 18, y: 5,  color: '#4f9d4f' },
+        { key: 'nyc_rock',     name: 'Rockefeller Center',    x: 7,  y: 12, color: '#d4b888' },
+        { key: 'nyc_bridge',   name: 'Brooklyn Bridge',      x: 35, y: 14, color: '#c1440e' },
+      ],
+      napSpots: [{ x: 18, y: 5 }, { x: 30, y: 22 }],
+      vehicleStops: [{ x: 18, y: 4, label: 'Uptown' }, { x: 18, y: 24, label: 'Downtown' }],
+      ferry: { a: { x: 5, y: 27 }, b: { x: 18, y: 27 }, labelA: 'Battery Park', labelB: 'Liberty Island' },
+      carTrack: { axis: 'y', fixed: 18, min: 4, max: 24, speed: 1.6 },
+      touristBounds: { minX: 4, maxX: 12, minY: 10, maxY: 14 },
+      fogArea: { min: 36, max: 40, drift: -1 },
+      pandaStart: { x: 18, y: 5 }, lastNap: { x: 18, y: 5 },
+      welcomeToast: 'Welcome to New York City! Photograph all 5 landmarks.',
+      buildMap: buildNYCMap, setup: setupNYC,
     },
     {
       name: 'Cleveland', vehicleName: 'RTA Rapid', vehicleType: 'rapid', vehicleColor: '#d4362f',
@@ -949,6 +1011,75 @@
         ctx.fillText('WRIGLEY', px, py + 6);
         break;
       }
+      // ===== NYC landmarks =====
+      case 'nyc_liberty': {
+        // Statue of Liberty — pedestal + statue + crown + torch
+        ctx.fillStyle = '#8a7a6a'; ctx.fillRect(px - 10, py - 8, 20, 16);
+        ctx.fillStyle = '#5cb85c'; ctx.fillRect(px - 5, py - 28, 10, 22);
+        ctx.fillStyle = '#4a9d4a'; ctx.fillRect(px - 5, py - 28, 10, 3);
+        // crown spikes
+        ctx.fillStyle = '#5cb85c';
+        for (let i = -2; i <= 2; i++) ctx.fillRect(px + i * 3 - 1, py - 32, 2, 5);
+        // torch
+        ctx.fillStyle = '#f2c14e'; ctx.fillRect(px - 1, py - 40, 2, 6);
+        ctx.fillStyle = '#ffdd44'; ctx.beginPath(); ctx.arc(px, py - 42, 3, 0, Math.PI * 2); ctx.fill();
+        // arm with tablet
+        ctx.fillStyle = '#5cb85c'; ctx.fillRect(px - 8, py - 22, 4, 10);
+        break;
+      }
+      case 'nyc_empire': {
+        // Empire State Building — tiered skyscraper with spire
+        ctx.fillStyle = '#3a3a40'; ctx.fillRect(px - 10, py - 34, 20, 40);
+        ctx.fillStyle = '#4a4a50'; ctx.fillRect(px - 8, py - 44, 16, 12);
+        ctx.fillStyle = '#5a5a64'; ctx.fillRect(px - 6, py - 52, 12, 10);
+        ctx.fillStyle = '#3a3a40'; ctx.fillRect(px - 2, py - 62, 4, 12);
+        ctx.fillStyle = '#f2c14e'; ctx.fillRect(px - 1, py - 66, 2, 6);
+        for (let r = 0; r < 4; r++) for (let c = 0; c < 3; c++) {
+          ctx.fillStyle = '#7a8a9a'; ctx.fillRect(px - 7 + c * 5, py - 30 + r * 8, 3, 4);
+        }
+        break;
+      }
+      case 'nyc_central': {
+        // Central Park — green rectangle with pond + trees + paths
+        ctx.fillStyle = '#4f9d4f'; ctx.fillRect(px - 20, py - 12, 40, 24);
+        ctx.fillStyle = '#2a6f97'; ctx.beginPath(); ctx.ellipse(px - 6, py + 2, 8, 4, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#6cc06c'; ctx.beginPath(); ctx.ellipse(px - 6, py, 6, 3, 0, 0, Math.PI * 2); ctx.fill();
+        for (const tx of [-14, 0, 12]) {
+          ctx.fillStyle = '#5a3a2a'; ctx.fillRect(px + tx - 1, py - 6, 3, 8);
+          ctx.fillStyle = '#3a7d3a'; ctx.beginPath(); ctx.arc(px + tx, py - 10, 5, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.fillStyle = '#d9c79a'; ctx.fillRect(px - 20, py - 2, 40, 2);
+        break;
+      }
+      case 'nyc_rock': {
+        // Rockefeller Center — art deco building + plaza + ice rink
+        ctx.fillStyle = '#d4b888'; ctx.fillRect(px - 10, py - 34, 20, 38);
+        ctx.fillStyle = '#c4a878'; ctx.fillRect(px - 10, py - 34, 20, 3);
+        ctx.fillStyle = '#a89060'; ctx.fillRect(px - 3, py - 40, 6, 8);
+        ctx.fillStyle = '#d4b888'; ctx.fillRect(px - 5, py - 42, 10, 4);
+        for (let r = 0; r < 4; r++) for (let c = 0; c < 3; c++) {
+          ctx.fillStyle = '#8a7050'; ctx.fillRect(px - 7 + c * 5, py - 28 + r * 7, 3, 4);
+        }
+        // ice rink / plaza
+        ctx.fillStyle = '#c0d8e8'; ctx.beginPath(); ctx.ellipse(px, py + 8, 16, 6, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#e0f0f8'; ctx.beginPath(); ctx.ellipse(px, py + 8, 12, 4, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#f2c14e'; ctx.beginPath(); ctx.arc(px, py + 8, 2, 0, Math.PI * 2); ctx.fill();
+        break;
+      }
+      case 'nyc_bridge': {
+        // Brooklyn Bridge — suspension towers + cables + deck
+        ctx.fillStyle = '#c1440e'; ctx.fillRect(px - 16, py - 28, 5, 34); ctx.fillRect(px + 11, py - 28, 5, 34);
+        ctx.fillStyle = '#a8380b'; ctx.fillRect(px - 16, py - 28, 5, 4); ctx.fillRect(px + 11, py - 28, 5, 4);
+        ctx.strokeStyle = '#e8c07a'; ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(px - 14, py - 10); ctx.quadraticCurveTo(px, py - 24, px + 14, py - 10);
+        ctx.moveTo(px - 14, py - 4); ctx.quadraticCurveTo(px, py - 18, px + 14, py - 4);
+        ctx.stroke();
+        ctx.fillStyle = '#8a5a2b'; ctx.fillRect(px - 18, py + 4, 36, 4);
+        ctx.strokeStyle = '#c0a060'; ctx.lineWidth = 1;
+        for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(px + i * 4, py - 10); ctx.lineTo(px + i * 4, py + 4); ctx.stroke(); }
+        break;
+      }
       // ===== Cleveland landmarks =====
       case 'cle_rock': {
         // Rock & Roll Hall of Fame — glass pyramid
@@ -1058,6 +1189,14 @@
         ctx.fillStyle = '#fff'; ctx.fillRect(px - 10, py - 4, 6, 5); ctx.fillRect(px - 1, py - 4, 6, 5); ctx.fillRect(px + 7, py - 4, 5, 5);
         ctx.fillStyle = '#f2c14e'; ctx.fillRect(px - 13, py + 4, 26, 2);
         ctx.fillStyle = '#3a3a40'; ctx.beginPath(); ctx.arc(px - 8, py + 8, 3, 0, Math.PI * 2); ctx.arc(px + 8, py + 8, 3, 0, Math.PI * 2); ctx.fill();
+      } else if (vtype === 'subway') {
+        ctx.fillStyle = '#c0c8d0'; ctx.fillRect(px - 14, py - 9, 28, 18);
+        ctx.fillStyle = vcol; ctx.fillRect(px - 14, py - 9, 28, 5);
+        ctx.fillStyle = '#1a3a5a'; ctx.fillRect(px - 14, py + 5, 28, 4);
+        ctx.fillStyle = '#3a5a7a'; ctx.fillRect(px - 11, py - 3, 6, 5); ctx.fillRect(px - 2, py - 3, 6, 5); ctx.fillRect(px + 6, py - 3, 6, 5);
+        ctx.fillStyle = '#f2c14e'; ctx.font = 'bold 7px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('M', px, py - 5);
+        ctx.fillStyle = '#3a3a40'; ctx.beginPath(); ctx.arc(px - 9, py + 9, 3, 0, Math.PI * 2); ctx.arc(px + 9, py + 9, 3, 0, Math.PI * 2); ctx.fill();
       }
     }
   }
