@@ -1,5 +1,5 @@
 // Panda's City Tour — client game engine
-// Top-down cozy explorer: a panda photographs landmarks across 5 cities.
+// Top-down cozy explorer: a panda photographs landmarks across 7 cities.
 
 (() => {
   'use strict';
@@ -199,6 +199,88 @@
     for (let i = 0; i < 12; i++) s.fog.push({ x: 36+Math.random()*4, y: 20+Math.random()*8, vx: -0.04-Math.random()*0.04, a: 0.05+Math.random()*0.08 });
   }
 
+  // ---------- Vancouver map ----------
+  function buildVancouverMap() {
+    const m = newMap();
+    // Burrard Inlet (north water), English Bay (west water), False Creek (south inlet)
+    fillM(m, 0, MAP_W - 1, 0, 1, T.WATER);
+    fillM(m, 0, 2, 0, MAP_H - 1, T.WATER);
+    fillM(m, 3, 20, 22, 24, T.WATER);
+    fillM(m, 0, 2, 22, 24, T.WATER);
+    // Lions Gate Bridge across Burrard Inlet
+    fillM(m, 10, 18, 1, 1, T.BRIDGE);
+    // Street grid
+    for (const y of [4, 8, 12, 16, 20, 26]) fillM(m, 3, 35, y, y, T.STREET);
+    for (const x of [8, 14, 20, 26, 32]) fillM(m, x, x, 2, 26, T.STREET);
+    // Stanley Park (big green rectangle, northwest)
+    fillM(m, 3, 10, 2, 8, T.GRASS);
+    setM(m, 3, 2, T.STREET); setM(m, 10, 2, T.STREET);
+    setM(m, 3, 8, T.STREET); setM(m, 10, 8, T.STREET);
+    // Downtown
+    fillM(m, 14, 22, 10, 14, T.BUILDING);
+    fillM(m, 14, 22, 11, 11, T.STREET); fillM(m, 14, 22, 14, 14, T.STREET);
+    fillM(m, 18, 18, 10, 14, T.STREET);
+    // East Vancouver residential
+    fillM(m, 26, 34, 16, 20, T.BUILDING);
+    fillM(m, 26, 34, 18, 18, T.STREET);
+    // Capilano canyon (water gap for suspension bridge)
+    fillM(m, 34, 36, 6, 10, T.WATER);
+    fillM(m, 34, 36, 6, 6, T.BRIDGE);
+    // Park trees
+    setM(m, 24, 24, T.BUILDING); setM(m, 28, 22, T.BUILDING); setM(m, 30, 26, T.BUILDING);
+    return m;
+  }
+  function setupVancouver(s) {
+    s.bamboos = [[5,4],[7,5],[6,6],[8,4],[4,5],[9,6],[16,12],[20,14],[24,16],[28,18],[32,20],[12,18]]
+      .map(([x,y]) => ({ x, y, taken: false, bob: Math.random()*Math.PI*2 })).filter((b) => !isSolidTile(s.map[b.y][b.x]));
+    s.cars = [{ x: 14, y: 4, dir: 1, t: 0 }, { x: 14, y: 20, dir: -1, t: 0.5 }];
+    s.gulls = [{ x: 4, y: 2, baseX: 4, baseY: 2, t: Math.random()*6 }, { x: 8, y: 1, baseX: 8, baseY: 1, t: Math.random()*6 }, { x: 14, y: 23, baseX: 14, baseY: 23, t: Math.random()*6 }];
+    s.tourists = [{ x: 16, y: 12, dx: 0, dy: 0, t: 0 }, { x: 19, y: 11, dx: 0, dy: 0, t: 1.5 }, { x: 17, y: 13, dx: 0, dy: 0, t: 3 }];
+    s.fog = [];
+    for (let i = 0; i < 10; i++) s.fog.push({ x: Math.random()*3, y: Math.random()*10, vx: 0.04+Math.random()*0.04, a: 0.06+Math.random()*0.08 });
+  }
+
+  // ---------- Seattle map ----------
+  function buildSeattleMap() {
+    const m = newMap();
+    // Puget Sound (west water), Lake Washington (east water)
+    fillM(m, 0, 2, 0, MAP_H - 1, T.WATER);
+    fillM(m, 36, MAP_W - 1, 0, MAP_H - 1, T.WATER);
+    // Pike Place waterfront pier
+    fillM(m, 2, 6, 12, 12, T.PIER);
+    // Street grid
+    for (const y of [4, 8, 14, 18, 22, 26]) fillM(m, 3, 35, y, y, T.STREET);
+    for (const x of [8, 14, 20, 26, 32]) fillM(m, x, x, 2, 28, T.STREET);
+    // Downtown / Space Needle area
+    fillM(m, 10, 18, 8, 12, T.BUILDING);
+    fillM(m, 10, 18, 9, 9, T.STREET); fillM(m, 10, 18, 12, 12, T.STREET);
+    fillM(m, 14, 14, 8, 12, T.STREET);
+    // Pike Place Market area
+    fillM(m, 6, 10, 14, 18, T.BUILDING);
+    fillM(m, 6, 10, 16, 16, T.STREET);
+    // Capitol Hill / east side
+    fillM(m, 24, 32, 6, 10, T.BUILDING);
+    fillM(m, 24, 32, 8, 8, T.STREET);
+    // South residential
+    fillM(m, 10, 20, 22, 26, T.BUILDING);
+    fillM(m, 10, 20, 24, 24, T.STREET);
+    // Kerry Park viewpoint (open grass on a hill)
+    fillM(m, 22, 26, 3, 5, T.GRASS);
+    setM(m, 22, 3, T.STREET); setM(m, 26, 3, T.STREET);
+    // Park trees
+    setM(m, 30, 20, T.BUILDING); setM(m, 32, 24, T.BUILDING); setM(m, 28, 22, T.BUILDING);
+    return m;
+  }
+  function setupSeattle(s) {
+    s.bamboos = [[24,4],[25,5],[23,4],[26,4],[12,14],[16,16],[20,18],[28,20],[30,22],[32,18],[8,20],[12,22]]
+      .map(([x,y]) => ({ x, y, taken: false, bob: Math.random()*Math.PI*2 })).filter((b) => !isSolidTile(s.map[b.y][b.x]));
+    s.cars = [{ x: 20, y: 4, dir: 1, t: 0 }, { x: 20, y: 18, dir: -1, t: 0.5 }];
+    s.gulls = [{ x: 4, y: 12, baseX: 4, baseY: 12, t: Math.random()*6 }, { x: 6, y: 10, baseX: 6, baseY: 10, t: Math.random()*6 }, { x: 2, y: 14, baseX: 2, baseY: 14, t: Math.random()*6 }];
+    s.tourists = [{ x: 12, y: 10, dx: 0, dy: 0, t: 0 }, { x: 15, y: 9, dx: 0, dy: 0, t: 1.5 }, { x: 13, y: 11, dx: 0, dy: 0, t: 3 }];
+    s.fog = [];
+    for (let i = 0; i < 14; i++) s.fog.push({ x: Math.random()*3, y: Math.random()*MAP_H, vx: 0.04+Math.random()*0.05, a: 0.06+Math.random()*0.08 });
+  }
+
   // ---------- Cleveland map ----------
   function buildClevelandMap() {
     const m = newMap();
@@ -334,6 +416,44 @@
       welcomeToast: 'Welcome to Cleveland! Photograph all 5 landmarks.',
       buildMap: buildClevelandMap, setup: setupCleveland,
     },
+    {
+      name: 'Vancouver', vehicleName: 'SkyTrain', vehicleType: 'skytrain', vehicleColor: '#3a8fd4',
+      landmarks: [
+        { key: 'van_stanley',  name: 'Stanley Park',             x: 6,  y: 5,  color: '#4f9d4f' },
+        { key: 'van_canada',   name: 'Canada Place',             x: 14, y: 4,  color: '#f0f0f0' },
+        { key: 'van_lions',    name: 'Lions Gate Bridge',         x: 14, y: 1,  color: '#c1440e' },
+        { key: 'van_capilano', name: 'Capilano Suspension Bridge', x: 35, y: 8,  color: '#8a5a2b' },
+        { key: 'van_science',  name: 'Science World',            x: 28, y: 18, color: '#d4d4d4' },
+      ],
+      napSpots: [{ x: 6, y: 5 }, { x: 28, y: 22 }],
+      vehicleStops: [{ x: 14, y: 4, label: 'Waterfront' }, { x: 14, y: 20, label: 'South Vancouver' }],
+      ferry: null,
+      carTrack: { axis: 'y', fixed: 14, min: 4, max: 20, speed: 1.6 },
+      touristBounds: { minX: 14, maxX: 22, minY: 10, maxY: 14 },
+      fogArea: { min: 0, max: 3, drift: 1 },
+      pandaStart: { x: 6, y: 5 }, lastNap: { x: 6, y: 5 },
+      welcomeToast: 'Welcome to Vancouver! Photograph all 5 landmarks.',
+      buildMap: buildVancouverMap, setup: setupVancouver,
+    },
+    {
+      name: 'Seattle', vehicleName: 'Monorail', vehicleType: 'monorail', vehicleColor: '#5cb85c',
+      landmarks: [
+        { key: 'sea_needle',   name: 'Space Needle',    x: 14, y: 10, color: '#9aa6b2' },
+        { key: 'sea_pike',     name: 'Pike Place Market', x: 8,  y: 16, color: '#d98a3d' },
+        { key: 'sea_wheel',    name: 'Seattle Great Wheel', x: 4, y: 12, color: '#3a7fd4' },
+        { key: 'sea_mopop',    name: 'Museum of Pop Culture', x: 28, y: 8, color: '#d4362f' },
+        { key: 'sea_kerry',    name: 'Kerry Park',       x: 24, y: 4,  color: '#4f9d4f' },
+      ],
+      napSpots: [{ x: 24, y: 4 }, { x: 28, y: 22 }],
+      vehicleStops: [{ x: 20, y: 4, label: 'Seattle Center' }, { x: 20, y: 22, label: 'Stadium District' }],
+      ferry: null,
+      carTrack: { axis: 'y', fixed: 20, min: 4, max: 22, speed: 1.6 },
+      touristBounds: { minX: 10, maxX: 18, minY: 8, maxY: 12 },
+      fogArea: { min: 0, max: 3, drift: 1 },
+      pandaStart: { x: 24, y: 4 }, lastNap: { x: 24, y: 4 },
+      welcomeToast: 'Welcome to Seattle! Photograph all 5 landmarks.',
+      buildMap: buildSeattleMap, setup: setupSeattle,
+    },
   ];
 
   function isSolidTile(t) { return t === T.WATER || t === T.BUILDING; }
@@ -351,9 +471,10 @@
   }
 
   // ---------- State ----------
-  function newGame() {
+  function newGame(startLevel) {
+    const lvl = (typeof startLevel === 'number') ? startLevel : 0;
     state = {
-      level: 0,
+      level: lvl,
       city: null,
       map: null,
       panda: { px: 0, py: 0, facing: 1, phase: 0, moving: false, daze: 0 },
@@ -371,7 +492,7 @@
       bamboos: [], cars: [], gulls: [], tourists: [], fog: [],
       toastShown: new Set(),
     };
-    loadCity(0);
+    loadCity(lvl);
     ui.restart.textContent = 'Restart';
     fetchScoreboard();
   }
@@ -459,6 +580,46 @@
   ui.music.addEventListener('click', toggleMusic);
   if (ui.charBtn) ui.charBtn.addEventListener('click', () => {
     Characters.open(() => { updateTitle(); newGame(); canvas.focus(); });
+  });
+
+  // ---------- City picker ----------
+  function buildCityPicker() {
+    const el = document.getElementById('city-picker');
+    if (!el) return null;
+    if (el.dataset.built === '1') return el;
+    el.dataset.built = '1';
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = '<h2>Choose a city</h2><p>Pick a city to explore. Each starts a fresh run.</p>';
+    const grid = document.createElement('div');
+    grid.className = 'char-grid city-grid';
+    CITIES.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'char-btn city-btn';
+      btn.dataset.level = String(i);
+      btn.style.borderColor = c.vehicleColor;
+      btn.innerHTML = '<span class="name">L' + (i + 1) + ' ' + c.name + '</span><span class="emoji" style="font-size:11px;color:var(--muted)">' + c.landmarks.length + ' landmarks</span>';
+      grid.appendChild(btn);
+    });
+    card.appendChild(grid);
+    el.appendChild(card);
+    return el;
+  }
+  function openCityPicker(onPick) {
+    const el = buildCityPicker();
+    if (!el) { if (onPick) onPick(0); return; }
+    el.classList.remove('hidden');
+    el.querySelectorAll('.city-btn').forEach((btn) => {
+      btn.onclick = () => {
+        el.classList.add('hidden');
+        if (onPick) onPick(parseInt(btn.dataset.level, 10));
+      };
+    });
+  }
+
+  const cityBtn = document.getElementById('city-btn');
+  if (cityBtn) cityBtn.addEventListener('click', () => {
+    openCityPicker((lvl) => { updateTitle(); newGame(lvl); canvas.focus(); });
   });
 
   // ---------- Actions ----------
@@ -1136,6 +1297,122 @@
         ctx.fillStyle = '#3a3a30'; ctx.fillRect(px + 6, py - 12, 2, 2); ctx.fillRect(px + 10, py - 12, 2, 2);
         break;
       }
+      // ===== Vancouver landmarks =====
+      case 'van_stanley': {
+        // Stanley Park — large park with trees + seawall
+        ctx.fillStyle = '#4f9d4f'; ctx.fillRect(px - 18, py - 12, 36, 24);
+        ctx.fillStyle = '#3a7d3a'; ctx.fillRect(px - 18, py - 12, 36, 2);
+        for (const tx of [-12, -4, 4, 12]) {
+          ctx.fillStyle = '#5a3a2a'; ctx.fillRect(px + tx - 1, py - 4, 3, 10);
+          ctx.fillStyle = '#3a7d3a'; ctx.beginPath(); ctx.arc(px + tx, py - 8, 6, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.fillStyle = '#2a6f97'; ctx.fillRect(px - 18, py + 10, 36, 3);
+        break;
+      }
+      case 'van_canada': {
+        // Canada Place — sail-shaped roof
+        ctx.fillStyle = '#8a7a6a'; ctx.fillRect(px - 14, py + 2, 28, 8);
+        ctx.fillStyle = '#f0f0f0';
+        ctx.beginPath(); ctx.moveTo(px - 12, py + 2); ctx.lineTo(px - 8, py - 22); ctx.lineTo(px - 4, py + 2); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(px - 4, py + 2); ctx.lineTo(px, py - 28); ctx.lineTo(px + 4, py + 2); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(px + 4, py + 2); ctx.lineTo(px + 8, py - 22); ctx.lineTo(px + 12, py + 2); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#d0d0d0'; ctx.fillRect(px - 14, py + 8, 28, 2);
+        ctx.fillStyle = '#3a3a40'; ctx.fillRect(px - 10, py + 4, 3, 4); ctx.fillRect(px + 7, py + 4, 3, 4);
+        break;
+      }
+      case 'van_lions': {
+        // Lions Gate Bridge — two towers + suspension cables
+        ctx.fillStyle = '#c1440e'; ctx.fillRect(px - 14, py - 20, 4, 28); ctx.fillRect(px + 10, py - 20, 4, 28);
+        ctx.strokeStyle = '#e8c07a'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(px - 12, py - 4); ctx.quadraticCurveTo(px, py - 18, px + 12, py - 4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(px - 12, py + 2); ctx.quadraticCurveTo(px, py - 12, px + 12, py + 2); ctx.stroke();
+        ctx.fillStyle = '#8a5a2b'; ctx.fillRect(px - 16, py + 6, 32, 3);
+        ctx.strokeStyle = '#c0a060'; ctx.lineWidth = 1;
+        for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(px + i * 4, py - 4); ctx.lineTo(px + i * 4, py + 6); ctx.stroke(); }
+        break;
+      }
+      case 'van_capilano': {
+        // Capilano Suspension Bridge — canyon + bridge
+        ctx.fillStyle = '#3a5a3a'; ctx.fillRect(px - 20, py, 14, 16); ctx.fillRect(px + 6, py, 14, 16);
+        ctx.fillStyle = '#2a4a2a'; ctx.fillRect(px - 20, py, 14, 4); ctx.fillRect(px + 6, py, 14, 4);
+        ctx.fillStyle = '#2a3a4a'; ctx.fillRect(px - 6, py + 8, 12, 8);
+        ctx.strokeStyle = '#8a5a2b'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(px - 6, py - 4); ctx.quadraticCurveTo(px, py + 2, px + 6, py - 4); ctx.stroke();
+        ctx.strokeStyle = '#6f4720'; ctx.lineWidth = 1;
+        for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(px + i * 3, py - 4); ctx.lineTo(px + i * 3, py + 4); ctx.stroke(); }
+        ctx.fillStyle = '#5a3a2a'; ctx.fillRect(px - 22, py - 6, 4, 22); ctx.fillRect(px + 18, py - 6, 4, 22);
+        break;
+      }
+      case 'van_science': {
+        // Science World — geodesic dome
+        ctx.fillStyle = '#8a7a6a'; ctx.fillRect(px - 12, py + 4, 24, 8);
+        ctx.fillStyle = '#d4d4d4'; ctx.beginPath(); ctx.arc(px, py, 14, Math.PI, 0); ctx.fill();
+        ctx.strokeStyle = '#b0b0b0'; ctx.lineWidth = 1;
+        for (let a = 0; a < 6; a++) { const ang = Math.PI + a * Math.PI / 6; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + Math.cos(ang) * 14, py + Math.sin(ang) * 14); ctx.stroke(); }
+        for (let r = 5; r < 14; r += 4) { ctx.beginPath(); ctx.arc(px, py, r, Math.PI, 0); ctx.stroke(); }
+        ctx.fillStyle = '#5fb3d4'; ctx.beginPath(); ctx.arc(px, py - 4, 3, 0, Math.PI * 2); ctx.fill();
+        break;
+      }
+      // ===== Seattle landmarks =====
+      case 'sea_needle': {
+        // Space Needle — tall tower with observation deck + saucer top
+        ctx.fillStyle = '#9aa6b2'; ctx.fillRect(px - 3, py - 10, 6, 22);
+        ctx.fillStyle = '#c0c8d0'; ctx.fillRect(px - 12, py - 20, 24, 6);
+        ctx.fillStyle = '#8a98a8'; ctx.fillRect(px - 12, py - 20, 24, 2);
+        ctx.fillStyle = '#c0c8d0'; ctx.beginPath(); ctx.ellipse(px, py - 24, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#8a98a8'; ctx.fillRect(px - 2, py - 34, 4, 12);
+        ctx.fillStyle = '#f2c14e'; ctx.fillRect(px - 1, py - 38, 2, 6);
+        ctx.fillStyle = '#7a8898'; ctx.fillRect(px - 10, py - 16, 3, 3); ctx.fillRect(px + 7, py - 16, 3, 3);
+        break;
+      }
+      case 'sea_pike': {
+        // Pike Place Market — waterfront market with awnings + sign
+        ctx.fillStyle = '#8a5a2b'; ctx.fillRect(px - 18, py - 2, 36, 10);
+        ctx.fillStyle = '#6f4720'; ctx.fillRect(px - 18, py - 2, 36, 3);
+        ctx.fillStyle = '#d98a3d'; ctx.fillRect(px - 16, py - 12, 8, 10); ctx.fillRect(px - 4, py - 14, 8, 12); ctx.fillRect(px + 8, py - 10, 8, 8);
+        ctx.fillStyle = '#3a3a40'; ctx.fillRect(px - 14, py - 9, 4, 4); ctx.fillRect(px - 2, py - 11, 4, 4); ctx.fillRect(px + 10, py - 7, 4, 4);
+        ctx.fillStyle = '#f2c14e'; ctx.font = 'bold 7px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('PIKE', px, py - 16);
+        ctx.fillStyle = '#2a6f97'; ctx.fillRect(px - 18, py + 8, 36, 4);
+        break;
+      }
+      case 'sea_wheel': {
+        // Seattle Great Wheel — ferris wheel on pier
+        ctx.fillStyle = '#8a5a2b'; ctx.fillRect(px - 14, py, 28, 10);
+        ctx.fillStyle = '#6f4720'; ctx.fillRect(px - 14, py, 28, 3);
+        ctx.strokeStyle = '#3a7fd4'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(px, py - 18, 16, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = '#3a7fd4';
+        for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5; ctx.beginPath(); ctx.arc(px + Math.cos(a) * 14, py - 18 + Math.sin(a) * 14, 2.5, 0, Math.PI * 2); ctx.fill(); }
+        ctx.strokeStyle = '#5a5a64'; ctx.lineWidth = 1;
+        for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5; ctx.beginPath(); ctx.moveTo(px, py - 18); ctx.lineTo(px + Math.cos(a) * 14, py - 18 + Math.sin(a) * 14); ctx.stroke(); }
+        ctx.fillStyle = '#3a3a40'; ctx.fillRect(px - 1, py - 18, 2, 18);
+        break;
+      }
+      case 'sea_mopop': {
+        // Museum of Pop Culture — colorful undulating building
+        ctx.fillStyle = '#d4362f'; ctx.fillRect(px - 16, py + 2, 32, 10);
+        ctx.fillStyle = '#e8554a'; ctx.beginPath(); ctx.moveTo(px - 16, py + 2); ctx.quadraticCurveTo(px - 8, py - 14, px, py - 8); ctx.quadraticCurveTo(px + 8, py - 2, px + 16, py + 2); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#f2c14e'; ctx.beginPath(); ctx.moveTo(px - 14, py + 2); ctx.quadraticCurveTo(px - 6, py - 10, px - 2, py - 6); ctx.quadraticCurveTo(px + 2, py - 2, px + 14, py + 2); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#5fb3d4'; ctx.beginPath(); ctx.moveTo(px - 10, py + 2); ctx.quadraticCurveTo(px - 2, py - 6, px + 10, py + 2); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#3a3a40'; ctx.fillRect(px - 14, py + 8, 5, 3); ctx.fillRect(px + 9, py + 8, 5, 3);
+        break;
+      }
+      case 'sea_kerry': {
+        // Kerry Park — viewpoint with skyline panorama
+        ctx.fillStyle = '#4f9d4f'; ctx.fillRect(px - 18, py + 2, 36, 10);
+        ctx.fillStyle = '#3a7d3a'; ctx.fillRect(px - 18, py + 2, 36, 2);
+        // mini skyline
+        ctx.fillStyle = '#3a3a40';
+        ctx.fillRect(px - 16, py - 8, 4, 10); ctx.fillRect(px - 10, py - 14, 4, 16); ctx.fillRect(px - 4, py - 6, 4, 8);
+        ctx.fillRect(px + 2, py - 18, 4, 20); ctx.fillRect(px + 8, py - 10, 4, 12); ctx.fillRect(px + 14, py - 4, 4, 6);
+        // Space Needle in panorama
+        ctx.fillStyle = '#9aa6b2'; ctx.fillRect(px + 8, py - 22, 2, 12); ctx.fillRect(px + 6, py - 26, 6, 4);
+        ctx.fillStyle = '#f2c14e'; ctx.fillRect(px + 8, py - 28, 2, 4);
+        // sun
+        ctx.fillStyle = '#f2c14e'; ctx.beginPath(); ctx.arc(px - 14, py - 16, 3, 0, Math.PI * 2); ctx.fill();
+        break;
+      }
     }
   }
 
@@ -1197,6 +1474,20 @@
         ctx.fillStyle = '#f2c14e'; ctx.font = 'bold 7px sans-serif'; ctx.textAlign = 'center';
         ctx.fillText('M', px, py - 5);
         ctx.fillStyle = '#3a3a40'; ctx.beginPath(); ctx.arc(px - 9, py + 9, 3, 0, Math.PI * 2); ctx.arc(px + 9, py + 9, 3, 0, Math.PI * 2); ctx.fill();
+      } else if (vtype === 'skytrain') {
+        ctx.fillStyle = '#c0c8d0'; ctx.fillRect(px - 14, py - 9, 28, 18);
+        ctx.fillStyle = vcol; ctx.fillRect(px - 14, py - 9, 28, 5);
+        ctx.fillStyle = '#1a4a7a'; ctx.fillRect(px - 14, py + 6, 28, 3);
+        ctx.fillStyle = '#7ab8e0'; ctx.fillRect(px - 11, py - 3, 7, 5); ctx.fillRect(px - 2, py - 3, 7, 5); ctx.fillRect(px + 6, py - 3, 7, 5);
+        ctx.fillStyle = '#f2c14e'; ctx.font = 'bold 7px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('SK', px, py - 5);
+        ctx.fillStyle = '#3a3a40'; ctx.beginPath(); ctx.arc(px - 9, py + 9, 3, 0, Math.PI * 2); ctx.arc(px + 9, py + 9, 3, 0, Math.PI * 2); ctx.fill();
+      } else if (vtype === 'monorail') {
+        ctx.fillStyle = vcol; ctx.fillRect(px - 16, py - 8, 32, 16);
+        ctx.fillStyle = '#3a7d3a'; ctx.fillRect(px - 16, py - 8, 32, 3);
+        ctx.fillStyle = '#fff'; ctx.fillRect(px - 13, py - 3, 8, 6); ctx.fillRect(px - 2, py - 3, 8, 6); ctx.fillRect(px + 8, py - 3, 5, 6);
+        ctx.fillStyle = '#3a3a40'; ctx.fillRect(px - 14, py + 8, 28, 3);
+        ctx.fillStyle = '#3a3a40'; ctx.beginPath(); ctx.arc(px - 10, py + 10, 2, 0, Math.PI * 2); ctx.arc(px + 10, py + 10, 2, 0, Math.PI * 2); ctx.fill();
       }
     }
   }
@@ -1415,6 +1706,8 @@
   // ---------- HUD ----------
   function updateHUD() {
     if (ui.city) ui.city.textContent = state.city.name + ' (Level ' + (state.level + 1) + '/' + CITIES.length + ')';
+    const mt = document.getElementById('minimap-title');
+    if (mt) mt.textContent = 'Map of ' + state.city.name;
     ui.energy.textContent = 'Energy: ' + Math.max(0, Math.round(state.energy));
     ui.bamboo.textContent = 'Bamboo: ' + state.bamboo;
     ui.photos.textContent = 'Photos: ' + state.photos.size + '/' + state.city.landmarks.length;
@@ -1511,14 +1804,23 @@
 
   function boot() {
     updateTitle();
-    newGame();
     canvas.focus();
     last = performance.now();
     requestAnimationFrame(loop);
   }
+  function startWithCityPicker() {
+    updateTitle();
+    openCityPicker((lvl) => {
+      newGame(lvl);
+      boot();
+    });
+  }
+  function afterChar() {
+    startWithCityPicker();
+  }
   if (window.Characters && !Characters.hasChoice()) {
-    Characters.open(boot);
+    Characters.open(afterChar);
   } else {
-    boot();
+    startWithCityPicker();
   }
 })();
